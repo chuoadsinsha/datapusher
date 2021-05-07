@@ -347,6 +347,7 @@ def push_to_datastore(task_id, input, dry_run=False):
 
     # check scheme
     url = resource.get('url')
+    url = url.replace('https://datacatalog.chuo-ad.campaign-service.com/', data['ckan_url'])  # access to callback_url.
     scheme = urlsplit(url).scheme
     if scheme not in ('http', 'https', 'ftp'):
         raise util.JobError(
@@ -507,8 +508,8 @@ def push_to_datastore(task_id, input, dry_run=False):
     for i, chunk in enumerate(chunky(result, CHUNK_INSERT_ROWS)):
         records, is_it_the_last_chunk = chunk
         count += len(records)
-        logger.info('Saving chunk {number} {is_last}'.format(
-            number=i, is_last='(last)' if is_it_the_last_chunk else ''))
+        logger.info('resource={res_id}: Saving chunk {number} {is_last}'.format(
+            res_id=resource_id, number=i, is_last='(last)' if is_it_the_last_chunk else ''))
         send_resource_to_datastore(resource, headers_dicts, records,
                                    is_it_the_last_chunk, api_key, ckan_url)
 
