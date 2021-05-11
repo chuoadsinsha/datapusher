@@ -111,7 +111,7 @@ class HTTPError(util.JobError):
     def __str__(self):
         return '{} status={} url={} response={}'.format(
             self.message, self.status_code, self.request_url, self.response) \
-            .encode('ascii', 'replace')
+            # .encode('ascii', 'replace')
 
 
 def get_url(action, ckan_url):
@@ -407,6 +407,7 @@ def push_to_datastore(task_id, input, dry_run=False):
     file_hash = m.hexdigest()
     tmp.seek(0)
 
+    logger.info('ignore_hash={}'.format(data.get('ignore_hash')))
     if (resource.get('hash') == file_hash
             and not data.get('ignore_hash')):
         logger.info("The file hash hasn't changed: {hash}.".format(
@@ -425,6 +426,9 @@ def push_to_datastore(task_id, input, dry_run=False):
             table_set = messytables.any_tableset(tmp, mimetype=format, extension=format)
         except:
             raise util.JobError(e)
+    except Exception as e:
+        logger.error('exception={}, resource={}'.format(e, str(resource)))
+        raise e
 
     get_row_set = web.app.config.get('GET_ROW_SET',
                                      lambda table_set: table_set.tables.pop())
@@ -488,6 +492,12 @@ def push_to_datastore(task_id, input, dry_run=False):
     headers_dicts = [dict(id=field[0], type=TYPE_MAPPING[str(field[1])])
                      for field in zip(headers, types)]
 
+    # カラム名によりデータ型変更
+    for h in headers_dicts:
+        if h['id'].startswith('id_'):
+            h['type'] = 'text'
+            logger.info('column type was changed={}'.format(h))
+
     # Maintain data dictionaries from matching column names
     if existing_info:
         for h in headers_dicts:
@@ -510,8 +520,12 @@ def push_to_datastore(task_id, input, dry_run=False):
         count += len(records)
         logger.info('resource={res_id}: Saving chunk {number} {is_last}'.format(
             res_id=resource_id, number=i, is_last='(last)' if is_it_the_last_chunk else ''))
-        send_resource_to_datastore(resource, headers_dicts, records,
-                                   is_it_the_last_chunk, api_key, ckan_url)
+        try:
+            send_resource_to_datastore(resource, headers_dicts, records,
+                                       is_it_the_last_chunk, api_key, ckan_url)
+        except Exception as e:
+            logger.error('exception={}, resource={}'.format(e, str(resource)))
+            raise e
 
     logger.info('Successfully pushed {n} entries to "{res_id}".'.format(
         n=count, res_id=resource_id))
