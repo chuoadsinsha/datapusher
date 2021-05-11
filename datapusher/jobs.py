@@ -494,7 +494,7 @@ def push_to_datastore(task_id, input, dry_run=False):
 
     # カラム名によりデータ型変更
     for h in headers_dicts:
-        if h['id'].startswith('id_'):
+        if h['id'].startswith('id_') and h['type'] == 'numeric':
             h['type'] = 'text'
             logger.info('column type was changed={}'.format(h))
 
