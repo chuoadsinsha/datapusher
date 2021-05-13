@@ -493,8 +493,9 @@ def push_to_datastore(task_id, input, dry_run=False):
                      for field in zip(headers, types)]
 
     # カラム名によりデータ型変更
+    text_col_names = ['incentivecontents', 'incentive_contents']
     for h in headers_dicts:
-        if h['id'].startswith('id_') and h['type'] == 'numeric':
+        if (h['type'] == 'numeric' and h['id'].startswith('id_') or h['id'] in text_col_names):
             h['type'] = 'text'
             logger.info('column type was changed={}'.format(h))
 
