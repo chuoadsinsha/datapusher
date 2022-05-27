@@ -24,7 +24,6 @@ import ckanserviceprovider.job as job
 import ckanserviceprovider.util as util
 from ckanserviceprovider import web
 
-osn = os.name
 if locale.getdefaultlocale()[0] and os.name != 'nt':
     lang, encoding = locale.getdefaultlocale()
     locale.setlocale(locale.LC_ALL, locale=(lang, encoding))
