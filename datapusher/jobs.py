@@ -27,7 +27,7 @@ from ckanserviceprovider import web
 osn = os.name
 if locale.getdefaultlocale()[0] and os.name != 'nt':
     lang, encoding = locale.getdefaultlocale()
-    locale.setlocale(locale.LC_ALL, locale=(lang, 'utf-8'))
+    locale.setlocale(locale.LC_ALL, locale=(lang, encoding))
 else:
     locale.setlocale(locale.LC_ALL, '')
 
