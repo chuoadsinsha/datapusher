@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import os
 import json
 import requests
 try:
@@ -18,14 +18,16 @@ import time
 import tempfile
 
 import messytables
+from datapusher.extensions import types
 
 import ckanserviceprovider.job as job
 import ckanserviceprovider.util as util
 from ckanserviceprovider import web
 
-if locale.getdefaultlocale()[0]:
+osn = os.name
+if locale.getdefaultlocale()[0] and os.name != 'nt':
     lang, encoding = locale.getdefaultlocale()
-    locale.setlocale(locale.LC_ALL, locale=(lang, encoding))
+    locale.setlocale(locale.LC_ALL, locale=(lang, 'utf-8'))
 else:
     locale.setlocale(locale.LC_ALL, '')
 
@@ -52,7 +54,7 @@ _TYPE_MAPPING = {
 }
 
 _TYPES = [messytables.StringType, messytables.DecimalType,
-          messytables.IntegerType, messytables.DateUtilType]
+          messytables.IntegerType, types.DateUtilType]
 
 TYPE_MAPPING = web.app.config.get('TYPE_MAPPING', _TYPE_MAPPING)
 TYPES = web.app.config.get('TYPES', _TYPES)
