@@ -34,6 +34,8 @@ CHUNK_SIZE = web.app.config.get('CHUNK_SIZE') or 16384
 CHUNK_INSERT_ROWS = web.app.config.get('CHUNK_INSERT_ROWS') or 250
 DOWNLOAD_TIMEOUT = web.app.config.get('DOWNLOAD_TIMEOUT') or 30
 
+TEXT_COL_NAMES = ['code', 'incentivecontents', 'incentive_contents', 'user_id']
+
 if web.app.config.get('SSL_VERIFY') in ['False', 'FALSE', '0', False, 0]:
     SSL_VERIFY = False
 else:
@@ -493,9 +495,8 @@ def push_to_datastore(task_id, input, dry_run=False):
                      for field in zip(headers, types)]
 
     # カラム名によりデータ型変更
-    text_col_names = ['incentivecontents', 'incentive_contents']
     for h in headers_dicts:
-        if (h['type'] == 'numeric' and h['id'].startswith('id_') or h['id'] in text_col_names):
+        if (h['type'] == 'numeric' and (h['id'].startswith('id_') or h['id'] in TEXT_COL_NAMES)):
             h['type'] = 'text'
             logger.info('column type was changed={}'.format(h))
 
