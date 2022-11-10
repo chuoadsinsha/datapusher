@@ -35,7 +35,7 @@ CHUNK_SIZE = web.app.config.get('CHUNK_SIZE') or 16384
 CHUNK_INSERT_ROWS = web.app.config.get('CHUNK_INSERT_ROWS') or 250
 DOWNLOAD_TIMEOUT = web.app.config.get('DOWNLOAD_TIMEOUT') or 30
 
-TEXT_COL_NAMES = ['code', 'incentivecontents', 'incentive_contents', 'user_id']
+TEXT_COL_NAMES = ['code', 'incentivecontents', 'incentive_contents', 'user_id', 'retweet_source_tweet_id']
 
 if web.app.config.get('SSL_VERIFY') in ['False', 'FALSE', '0', False, 0]:
     SSL_VERIFY = False
